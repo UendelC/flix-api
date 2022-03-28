@@ -19,4 +19,20 @@ class VideoControllerTest extends TestCase
             ->assertSuccessful()
             ->assertJsonCount(3, 'data');
     }
+
+    public function testCanGetAVideo()
+    {
+        $video = Video::factory()->create();
+
+        $this->getJson('/api/videos/' . $video->id)
+            ->assertSuccessful()
+            ->assertJsonFragment(
+                [
+                    'id' => $video->id,
+                    'title' => $video->title,
+                    'description' => $video->description,
+                    'url' => $video->url,
+                ]
+            );
+    }
 }

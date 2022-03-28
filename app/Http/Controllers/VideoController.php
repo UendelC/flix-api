@@ -11,4 +11,9 @@ class VideoController extends Controller
     {
         return Video::paginate();
     }
+
+    public function show(Video $video)
+    {
+        return $video;
+    }
 }
