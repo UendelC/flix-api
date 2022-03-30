@@ -35,4 +35,54 @@ class VideoControllerTest extends TestCase
                 ]
             );
     }
+
+    public function testItIsPossibleToStoreAVideo()
+    {
+        $video_payload = Video::factory()->make()->toArray();
+
+        $this->postJson('/api/videos', $video_payload)
+            ->assertSuccessful()
+            ->assertJsonFragment(
+                [
+                    'title' => $video_payload['title'],
+                    'description' => $video_payload['description'],
+                    'url' => $video_payload['url'],
+                ]
+            );
+
+        $this->assertDatabaseHas((new Video)->getTable(), $video_payload);
+    }
+
+    public function testItIsPossibleToUpdateAVideo()
+    {
+        $video = Video::factory()->create();
+
+        $video_payload = Video::factory()->make()->toArray();
+
+        $this->putJson('/api/videos/' . $video->id, $video_payload)
+            ->assertSuccessful()
+            ->assertJsonFragment(
+                [
+                    'id' => $video->id,
+                    'title' => $video_payload['title'],
+                    'description' => $video_payload['description'],
+                    'url' => $video_payload['url'],
+                ]
+            );
+
+        $this->assertDatabaseHas(
+            (new Video)->getTable(),
+            $video_payload + ['id' => $video->id]
+        );
+    }
+
+    public function testItIsPossibleToDeleteAVideo()
+    {
+        $video = Video::factory()->create();
+
+        $this->deleteJson('/api/videos/' . $video->id)
+            ->assertSuccessful();
+
+        $this->assertDatabaseMissing((new Video)->getTable(), ['id' => $video->id]);
+    }
 }
