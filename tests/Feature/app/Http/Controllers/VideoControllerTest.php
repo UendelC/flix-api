@@ -55,9 +55,13 @@ class VideoControllerTest extends TestCase
 
     public function testItIsPossibleToUpdateAVideo()
     {
-        $video = Video::factory()->create();
+        $video = Video::factory()
+            ->withCategory()
+            ->create();
 
-        $video_payload = Video::factory()->make()->toArray();
+        $video_payload = Video::factory()
+            ->make(['category_id' => $video->category_id])
+            ->toArray();
 
         $this->putJson('/api/videos/' . $video->id, $video_payload)
             ->assertSuccessful()

@@ -3,33 +3,42 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreVideoRequest;
+use App\Http\Requests\UpdateVideoRequest;
+use App\Http\Resources\VideoResource;
 use App\Models\Video;
 use Illuminate\Http\Request;
 
 class VideoController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return Video::paginate();
-    }
+        $video_query = Video::when(
+            $request->has('search'),
+            function ($query) use ($request) {
+                $query->where('title', 'like', "%{$request->get('search')}%");
+            }
+        );
 
-    public function show(Video $video)
-    {
-        return $video;
+        return VideoResource::collection($video_query->paginate());
     }
 
     public function store(StoreVideoRequest $request)
     {
         $video = Video::create($request->validated());
 
-        return response()->json($video, 201);
+        return new VideoResource($video);
     }
 
-    public function update(StoreVideoRequest $request, Video $video)
+    public function show(Video $video)
+    {
+        return new VideoResource($video);
+    }
+
+    public function update(UpdateVideoRequest $request, Video $video)
     {
         $video->update($request->validated());
 
-        return response()->json($video, 200);
+        return new VideoResource($video);
     }
 
     public function destroy(Video $video)
