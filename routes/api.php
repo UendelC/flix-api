@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\VideoController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -20,3 +21,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::apiResource('/videos', VideoController::class);
+Route::get('categories/{category}/videos', [CategoryController::class, 'videos'])
+    ->name('categories.videos');
+Route::apiResource('/categories', CategoryController::class);
