@@ -19,7 +19,7 @@ class VideoController extends Controller
             }
         );
 
-        return VideoResource::collection($video_query->paginate());
+        return VideoResource::collection($video_query->paginate(5));
     }
 
     public function store(StoreVideoRequest $request)
@@ -46,5 +46,10 @@ class VideoController extends Controller
         $video->delete();
 
         return response()->json(null, 204);
+    }
+
+    public function freeVideos()
+    {
+        return VideoResource::collection(Video::take(5)->paginate(5));
     }
 }
