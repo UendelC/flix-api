@@ -2,14 +2,23 @@
 
 namespace Tests\Feature\app\Http\Controllers;
 
+use App\Models\User;
 use App\Models\Video;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Laravel\Passport\Passport;
 use Tests\TestCase;
 
 class VideoControllerTest extends TestCase
 {
     use RefreshDatabase;
+
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        Passport::actingAs(User::factory()->create());
+    }
 
     public function testIndexReturnsAllVideos()
     {
@@ -88,5 +97,30 @@ class VideoControllerTest extends TestCase
             ->assertSuccessful();
 
         $this->assertDatabaseMissing((new Video)->getTable(), ['id' => $video->id]);
+    }
+
+    public function testItIsPossibleToSearchVideos()
+    {
+        $video = Video::factory()->create();
+
+        $this->getJson('/api/videos?search=' . $video->title)
+            ->assertSuccessful()
+            ->assertJsonFragment(
+                [
+                    'id' => $video->id,
+                    'title' => $video->title,
+                    'description' => $video->description,
+                    'url' => $video->url,
+                ]
+            );
+    }
+
+    public function testAnyoneCanGetFiveFreeVideos()
+    {
+        Video::factory()->count(5)->create();
+
+        $this->getJson('/api/videos/free')
+            ->assertSuccessful()
+            ->assertJsonCount(5, 'data');
     }
 }

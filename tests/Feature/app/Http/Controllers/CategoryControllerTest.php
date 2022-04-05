@@ -3,14 +3,22 @@
 namespace Tests\Feature\app\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\User;
 use App\Models\Video;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
+use Laravel\Passport\Passport;
 use Tests\TestCase;
 
 class CategoryControllerTest extends TestCase
 {
     use RefreshDatabase;
+
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        Passport::actingAs(User::factory()->create());
+    }
 
     public function testGetAllVideosRelated()
     {
