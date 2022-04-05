@@ -22,7 +22,6 @@ return new class extends Migration
 
         Schema::table('videos', function (Blueprint $table) {
             $table->foreignId('category_id')
-                ->constrained()
                 ->onDelete('cascade');
         });
     }
