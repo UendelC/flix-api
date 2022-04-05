@@ -12,7 +12,7 @@ class CategoryController extends Controller
 {
     public function index()
     {
-        return CategoryResource::collection(Category::paginate());
+        return CategoryResource::collection(Category::paginate(5));
     }
 
     public function store(StoreCategoryRequest $request)
